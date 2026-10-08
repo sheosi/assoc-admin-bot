@@ -1,0 +1,21 @@
+pub mod add_associate;
+pub mod create_assembly;
+pub mod get_chat;
+pub mod get_treasury_report;
+pub mod list_associates;
+pub mod post_assembly_minutes;
+pub mod register_treasury_update;
+pub mod remove_associate;
+pub mod set_chat;
+pub mod update_associate;
+
+pub use add_associate::AddAssociate;
+pub use create_assembly::CreateAssembly;
+pub use get_chat::GetChat;
+pub use get_treasury_report::GetTreasuryReport;
+pub use list_associates::ListAssociates;
+pub use post_assembly_minutes::PostAssemblyMinutes;
+pub use register_treasury_update::RegisterTreasuryUpdate;
+pub use remove_associate::RemoveAssociate;
+pub use set_chat::SetChat;
+pub use update_associate::UpdateAssociate;

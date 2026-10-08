@@ -1,0 +1,79 @@
+[package]
+name = "assoc-admin-bot"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+
+[dependencies]
+# Web framework
+axum = { version = "0.8", features = ["macros"] }
+tower = "0.5"
+tower-http = { version = "0.6", features = ["cors", "trace"] }
+
+# Async runtime
+tokio = { version = "1.35", features = ["full"] }
+tokio-util = "0.7"
+futures = "0.3"
+async-trait = "0.1"
+
+
+
+# Telegram bot
+teloxide = { version = "0.17", features = ["macros", "webhooks-axum"] }
+
+# OpenAI
+async-openai = {version = "0.41", features = ["chat-completion", "audio", "byot"]}
+
+# HTTP client
+reqwest = { version = "0.13", features = ["json"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Date/time
+chrono = { version = "0.4", features = ["serde","unstable-locales"] }
+
+# Email
+lettre = { version = "0.11", features = ["tokio1", "tokio1-native-tls", "builder"] }
+
+# Browser automation (Selenium WebDriver)
+thirtyfour = "0.37"
+
+# Google Calendar API
+google-calendar3 = "*"
+hyper = { version = "1.0", features = ["full"] }
+hyper-util = { version = "0.1", features = ["full"] }
+hyper-rustls = "0.27"
+yup-oauth2 = "12"
+
+# Error handling
+anyhow = "1.0"
+thiserror = "2.0"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Environment variables
+dotenvy = "0.15"
+
+# Utilities
+uuid = { version = "1.6", features = ["v4", "serde"] }
+regex = "1.10"
+lazy_static = "1.4"
+
+# Infisical secrets - using official Infisical Rust SDK
+infisical = "0.0.3"
+deadpool = "0.13"
+deadpool-sqlite = {version="0.13",features=["bundled-sqlcipher","rt_tokio_1"]}
+enum_dispatch = "0.3.13"
+edit-distance = "2.2.2"
+
+# PDF generation
+printpdf = "0.9"
+v_escape = "0.19.0"
+botframework = { git = "https://github.com/sheosi/bot_framework", version = "0.1.0", features=["derive"] }
+
+[dev-dependencies]
+tokio-test = "0.4"

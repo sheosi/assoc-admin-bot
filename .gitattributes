@@ -1,0 +1,5 @@
+Encabezado.png filter=lfs diff=lfs merge=lfs -text
+Logo[[:space:]]Kito.png filter=lfs diff=lfs merge=lfs -text
+Parte[[:space:]]abajo.png filter=lfs diff=lfs merge=lfs -text
+Parte[[:space:]]abjo.png filter=lfs diff=lfs merge=lfs -text
+*.jpeg filter=lfs diff=lfs merge=lfs -text
