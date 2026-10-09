@@ -3,7 +3,10 @@
 
 use anyhow::{Context, Result};
 use std::time::Duration;
-use thirtyfour::{By, ChromiumLikeCapabilities, DesiredCapabilities, WebDriver};
+use thirtyfour::{
+    error::WebDriverError, extensions::query::ElementQueryable, By, ChromiumLikeCapabilities,
+    DesiredCapabilities, WebDriver, WebElement,
+};
 
 use crate::models::PaymentConfig;
 
@@ -57,13 +60,18 @@ impl Browser {
         Ok(texts)
     }
 
-    /// Wait for page to load
-    async fn wait_page_load(&self) {
-        tokio::time::sleep(Duration::from_secs(3)).await;
+    /// Waits for an element to exist, with a timeout of 10s
+    async fn wait_for(&self, selector: &str) -> Result<WebElement, WebDriverError> {
+        Ok(self
+            .driver
+            .query(By::Css(selector))
+            .wait(Duration::from_secs(10), Duration::from_millis(250))
+            .first()
+            .await?)
     }
 
     /// Login to Ruralvia
-    async fn login_ruralvia(&self, user: &str, pass: &str) -> Result<()> {
+    async fn login_ruralvia(&self, user: &str, pass: &str, wait_for: &str) -> Result<WebElement> {
         self.driver
             .goto("https://bancadigital.ruralvia.com/CA-FRONT/NBE/web/particulares/#/login")
             .await?;
@@ -74,17 +82,7 @@ impl Browser {
         self.click_button_xpath("//form//button[@type=\"submit\"]")
             .await?;
 
-        self.wait_page_load().await;
-
-        Ok(())
-    }
-
-    /// Navigate to account page
-    async fn go_to_account(&self) -> Result<()> {
-        self.click_button_xpath("//button[.//span[text() = 'CUENTA CORRIENTE']]")
-            .await?;
-        self.wait_page_load().await;
-        Ok(())
+        Ok(self.wait_for(wait_for).await?)
     }
 
     /// List paid transactions from the account
@@ -105,8 +103,14 @@ impl Browser {
     pub async fn check_new_payments(user: &str, pass: &str) -> Result<Vec<String>> {
         let browser = Browser::new().await?;
 
-        browser.login_ruralvia(user, pass).await?;
-        browser.go_to_account().await?;
+        // Login into ruralvia and wait for the "Cuenta corriente" button to be available
+        let btn = browser
+            .login_ruralvia(user, pass, "//button[.//span[text() = 'CUENTA CORRIENTE']]")
+            .await?;
+        btn.click().await?;
+        browser
+            .wait_for("//ol[1]/li/div[1]/button[1]/span[2]/p[1]")
+            .await?;
 
         let payed = browser.list_payed().await?;
 
@@ -128,7 +132,9 @@ impl RuralviaChecker {
         Self { user, pass }
     }
 
-    /// Get last payments from Ruralvia
+    /// Get last payments from Ruralvia. This will return empty on failure, with
+    /// hopes that on a future check it will go according to plan (though the
+    /// failures are logged).
     pub async fn get_last_payments(&self) -> Vec<String> {
         match Browser::check_new_payments(&self.user, &self.pass).await {
             Ok(payments) => payments,
